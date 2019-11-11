@@ -16,8 +16,10 @@
  */
 package org.apache.dubbo.demo;
 
+import java.util.List;
+
 public interface DemoService {
 
-    String sayHello(String name);
+    List<MyBean> sayHello(String name);
 
 }
