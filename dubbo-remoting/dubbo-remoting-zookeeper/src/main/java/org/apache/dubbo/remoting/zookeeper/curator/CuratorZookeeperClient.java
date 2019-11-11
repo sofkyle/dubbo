@@ -225,6 +225,7 @@ public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorZooke
     @Override
     protected void addTargetDataListener(String path, CuratorZookeeperClient.CuratorWatcherImpl treeCacheListener, Executor executor) {
         try {
+            // Build a listener, watch the ZK path, respond to update/create/delete events, pull down the data.
             TreeCache treeCache = TreeCache.newBuilder(client, path).setCacheData(false).build();
             treeCacheMap.putIfAbsent(path, treeCache);
             treeCache.start();

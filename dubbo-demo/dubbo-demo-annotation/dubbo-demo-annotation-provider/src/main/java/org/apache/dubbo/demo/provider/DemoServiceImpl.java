@@ -20,19 +20,27 @@ package org.apache.dubbo.demo.provider;
 
 import org.apache.dubbo.config.annotation.Service;
 import org.apache.dubbo.demo.DemoService;
-import org.apache.dubbo.rpc.RpcContext;
+import org.apache.dubbo.demo.MyBean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Service
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@Service(timeout = 10000)
 public class DemoServiceImpl implements DemoService {
     private static final Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);
 
+    private static AtomicInteger count = new AtomicInteger(1);
+
     @Override
-    public String sayHello(String name) {
-        logger.info("Hello " + name + ", request from consumer: " + RpcContext.getContext().getRemoteAddress());
-        return "Hello " + name + ", response from provider: " + RpcContext.getContext().getLocalAddress();
+    public List<MyBean> sayHello(String name) {
+        System.out.println("count: " + count.getAndIncrement());
+        MyBean myBean = new MyBean();
+        myBean.setName("hello");
+        return Arrays.asList(myBean, myBean);
     }
 
 }

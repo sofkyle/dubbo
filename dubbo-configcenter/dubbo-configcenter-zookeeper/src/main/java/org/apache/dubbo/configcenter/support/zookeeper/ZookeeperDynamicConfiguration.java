@@ -57,7 +57,9 @@ public class ZookeeperDynamicConfiguration implements DynamicConfiguration {
         this.cacheListener = new CacheListener(rootPath, initializedLatch);
         this.executor = Executors.newFixedThreadPool(1, new NamedThreadFactory(this.getClass().getSimpleName(), true));
 
+        // Fire the connection
         zkClient = zookeeperTransporter.connect(url);
+        // Registry the listener
         zkClient.addDataListener(rootPath, cacheListener, executor);
         try {
             // Wait for connection
