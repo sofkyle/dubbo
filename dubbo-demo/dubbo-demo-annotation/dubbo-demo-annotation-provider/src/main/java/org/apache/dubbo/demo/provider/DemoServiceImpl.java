@@ -39,7 +39,7 @@ public class DemoServiceImpl implements DemoService {
     public List<MyBean> sayHello(String name) {
         System.out.println("count: " + count.getAndIncrement());
         MyBean myBean = new MyBean();
-        myBean.setName("hello");
+        myBean.setName(name);
         return Arrays.asList(myBean, myBean);
     }
 
