@@ -112,20 +112,20 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             return buf.toString();
         }
 
-        private Invoker<T> selectForKey(long hash) {
-            Map.Entry<Long, Invoker<T>> entry = virtualInvokers.ceilingEntry(hash);
-            if (entry == null) {
-                entry = virtualInvokers.firstEntry();
-            }
-            return entry.getValue();
-        }
-
         private long hash(byte[] digest, int number) {
             return (((long) (digest[3 + number * 4] & 0xFF) << 24)
                     | ((long) (digest[2 + number * 4] & 0xFF) << 16)
                     | ((long) (digest[1 + number * 4] & 0xFF) << 8)
                     | (digest[number * 4] & 0xFF))
                     & 0xFFFFFFFFL;
+        }
+
+        private Invoker<T> selectForKey(long hash) {
+            Map.Entry<Long, Invoker<T>> entry = virtualInvokers.ceilingEntry(hash);
+            if (entry == null) {
+                entry = virtualInvokers.firstEntry();
+            }
+            return entry.getValue();
         }
 
         private byte[] md5(String value) {
