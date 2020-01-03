@@ -54,7 +54,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         String methodName = RpcUtils.getMethodName(invocation);
+        // key格式：接口名.方法名
         String key = invokers.get(0).getUrl().getServiceKey() + "." + methodName;
+        // identityHashCode 用来识别invoker对象是否发生过变更
         int identityHashCode = System.identityHashCode(invokers);
         ConsistentHashSelector<T> selector = (ConsistentHashSelector<T>) selectors.get(key);
         if (selector == null || selector.identityHashCode != identityHashCode) {
@@ -74,6 +76,13 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
 
         private final int[] argumentIndex;
 
+        /**
+         * 在初始化Hash选择器时，就初始化虚拟节点
+         *
+         * @param invokers
+         * @param methodName
+         * @param identityHashCode
+         */
         ConsistentHashSelector(List<Invoker<T>> invokers, String methodName, int identityHashCode) {
             this.virtualInvokers = new TreeMap<Long, Invoker<T>>();
             this.identityHashCode = identityHashCode;
@@ -97,7 +106,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         }
 
         public Invoker<T> select(Invocation invocation) {
+            // 根据invocation的【参数值】来确定key，默认使用第一个参数来做hash计算
             String key = toKey(invocation.getArguments());
+            //  获取【参数值】的md5编码
             byte[] digest = md5(key);
             return selectForKey(hash(digest, 0));
         }
