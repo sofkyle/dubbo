@@ -54,9 +54,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         String methodName = RpcUtils.getMethodName(invocation);
-        // key格式：接口名.方法名
+        // key: service.method
         String key = invokers.get(0).getUrl().getServiceKey() + "." + methodName;
-        // identityHashCode 用来识别invokers是否发生过变更
+        // identityHashCode is used for identifying whether invokers changed or not
         int identityHashCode = System.identityHashCode(invokers);
         ConsistentHashSelector<T> selector = (ConsistentHashSelector<T>) selectors.get(key);
         if (selector == null || selector.identityHashCode != identityHashCode) {
@@ -68,12 +68,24 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
 
     private static final class ConsistentHashSelector<T> {
 
+        /**
+         * TreeMap for storing mapping relationship between hash and node
+         */
         private final TreeMap<Long, Invoker<T>> virtualInvokers;
 
+        /**
+         * node count
+         */
         private final int replicaNumber;
 
+        /**
+         * hash for identifying whether invokers changed or not
+         */
         private final int identityHashCode;
 
+        /**
+         * index of parameters for mapping in the request
+         */
         private final int[] argumentIndex;
 
         /**
