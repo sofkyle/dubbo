@@ -54,9 +54,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         String methodName = RpcUtils.getMethodName(invocation);
-        // key: service.method
+        // Key: service.method
         String key = invokers.get(0).getUrl().getServiceKey() + "." + methodName;
-        // identityHashCode is used for identifying whether invokers changed or not
+        // IdentityHashCode is used for identifying whether invokers changed or not
         int identityHashCode = System.identityHashCode(invokers);
         ConsistentHashSelector<T> selector = (ConsistentHashSelector<T>) selectors.get(key);
         if (selector == null || selector.identityHashCode != identityHashCode) {
@@ -74,22 +74,22 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         private final TreeMap<Long, Invoker<T>> virtualInvokers;
 
         /**
-         * node count
+         * Node count
          */
         private final int replicaNumber;
 
         /**
-         * hash for identifying whether invokers changed or not
+         * Hash for identifying whether invokers changed or not
          */
         private final int identityHashCode;
 
         /**
-         * index of parameters for mapping in the request
+         * Index of argument for mapping in the request
          */
         private final int[] argumentIndex;
 
         /**
-         * 在初始化Hash选择器时，就初始化虚拟节点
+         * Init virtual node when create ConsistentHashSelector
          *
          * @param invokers
          * @param methodName
@@ -118,9 +118,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         }
 
         public Invoker<T> select(Invocation invocation) {
-            // 根据invocation的【参数值】来确定key，默认使用第一个参数来做hash计算
+            // Define key according to the argument in invocation，default by the first one
             String key = toKey(invocation.getArguments());
-            //  获取【参数值】的md5编码
+            // Get the md5 code of parameters
             byte[] digest = md5(key);
             return selectForKey(hash(digest, 0));
         }
