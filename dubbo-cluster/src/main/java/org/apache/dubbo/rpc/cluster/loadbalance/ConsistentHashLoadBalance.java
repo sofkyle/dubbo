@@ -120,7 +120,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         public Invoker<T> select(Invocation invocation) {
             // Define key according to the argument in invocation，default by the first one
             String key = toKey(invocation.getArguments());
-            // Get the md5 code of parameters
+            // Get the md5 code of arguments
             byte[] digest = md5(key);
             return selectForKey(hash(digest, 0));
         }
